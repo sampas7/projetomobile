@@ -1,0 +1,66 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fundo_sentinela"
+    android:padding="24dp">
+
+    <!-- Preview da imagem -->
+    <ImageView
+        android:id="@+id/imgPreview"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:scaleType="centerCrop"
+        android:background="@android:color/darker_gray"
+        android:contentDescription="Preview da imagem" />
+
+    <!-- botão para tirar ou escolher foto -->
+    <Button
+        android:id="@+id/btnSelecionarFoto"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Selecionar Foto"
+        android:layout_below="@id/imgPreview"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_background"
+        android:textColor="#FFFFFF"/>
+
+    <!-- botão para gravar áudio -->
+    <Button
+        android:id="@+id/btnGravarAudio"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Gravar Áudio"
+        android:layout_below="@id/btnSelecionarFoto"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/button_background"
+        android:textColor="#FFFFFF"/>
+
+    <!-- Botão para ouvir áudio -->
+    <Button
+        android:id="@+id/btnOuvirAudio"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Ouvir Áudio"
+        android:layout_below="@id/btnGravarAudio"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/button_background"
+        android:textColor="#FFFFFF"/>
+
+    <!-- Botão para apagar gravação -->
+    <Button
+        android:id="@+id/btnApagarAudio"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Apagar Gravação"
+        android:layout_below="@id/btnOuvirAudio"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/button_background"
+        android:textColor="#FFFFFF"/>
+
+</RelativeLayout>
