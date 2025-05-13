@@ -18,6 +18,8 @@ class AddRegistroActivity : AppCompatActivity() {
     private lateinit var txtContador: TextView
 
     private lateinit var audioManager: AudioManager
+    private lateinit var imageManager: ImageManager
+
 
     private var contador = 0
     private var timer: CountDownTimer? = null
@@ -27,6 +29,23 @@ class AddRegistroActivity : AppCompatActivity() {
     ) { isGranted: Boolean ->
         if (isGranted) startRecording() else Toast.makeText(this, "Permissão negada", Toast.LENGTH_SHORT).show()
     }
+
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == RESULT_OK) {
+            imgPreview.setImageURI(imageManager.currentPhotoUri)
+        }
+    }
+
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == RESULT_OK) {
+            val uri = it.data?.data
+            uri?.let {
+                imageManager.currentPhotoUri = it
+                imgPreview.setImageURI(it)
+            }
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,6 +106,24 @@ class AddRegistroActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Nenhuma gravação pra apagar", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        imageManager = ImageManager(this)
+
+        btnSelecionarFoto.setOnClickListener {
+            val popup = PopupMenu(this, btnSelecionarFoto)
+            popup.menu.add("Tirar Foto")
+            popup.menu.add("Escolher da Galeria")
+
+            popup.setOnMenuItemClickListener { item ->
+                when (item.title) {
+                    "Tirar Foto" -> imageManager.openCamera(cameraLauncher)
+                    "Escolher da Galeria" -> imageManager.openGallery(galleryLauncher)
+                }
+                true
+            }
+
+            popup.show()
         }
     }
 
