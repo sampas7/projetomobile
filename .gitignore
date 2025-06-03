@@ -1,4 +1,4 @@
-*.iml
+# Android
 .gradle
 /local.properties
 /.idea/caches
@@ -12,5 +12,58 @@
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+*.iml
+
+# Keystore files
+*.jks
+*.keystore
+
+# Google Services (API KEY, FIREBASE E AFINS)
 **/google-services.json
+**/GoogleService-Info.plist
+
+# Crashlytics
+crashlytics-build.properties
+
+# Firebase
+firebase-appindexing.json
+
+# Android Studio Profiling
+*.hprof
+.idea/misc.xml
+
+# Log
+*.log
+
+# Mac
+*.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python (se usar script)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node (caso use)
+node_modules/
+npm-debug.log
+
+# Others
+*.apk
+*.ap_
+*.dex
+*.class
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+*.swp
+
+# Local env files
+.env
+.env.*
