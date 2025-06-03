@@ -1,0 +1,7 @@
+<resources>
+
+<style name="PopupAnimationStyle">
+    <item name="android:windowEnterAnimation">@anim/popup_enter</item>
+</style>
+
+</resources>

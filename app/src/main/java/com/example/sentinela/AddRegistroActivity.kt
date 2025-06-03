@@ -20,23 +20,39 @@ class AddRegistroActivity : AppCompatActivity() {
     private lateinit var audioManager: AudioManager
     private lateinit var imageManager: ImageManager
 
-
     private var contador = 0
     private var timer: CountDownTimer? = null
 
-    private val requestPermissionLauncher = registerForActivityResult(
+    // Permissão do microfone
+    private val requestMicrophonePermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
-        if (isGranted) startRecording() else Toast.makeText(this, "Permissão negada", Toast.LENGTH_SHORT).show()
+        if (isGranted) startRecording()
+        else Toast.makeText(this, "Permissão de microfone negada", Toast.LENGTH_SHORT).show()
     }
 
-    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    // Permissão da câmera
+    private val requestCameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            imageManager.openCamera(cameraLauncher)
+        } else {
+            Toast.makeText(this, "Permissão da câmera negada", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val cameraLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
         if (it.resultCode == RESULT_OK) {
             imgPreview.setImageURI(imageManager.currentPhotoUri)
         }
     }
 
-    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    private val galleryLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
         if (it.resultCode == RESULT_OK) {
             val uri = it.data?.data
             uri?.let {
@@ -46,12 +62,12 @@ class AddRegistroActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_registro)
 
         audioManager = AudioManager(this)
+        imageManager = ImageManager(this)
 
         imgPreview = findViewById(R.id.imgPreview)
         btnSelecionarFoto = findViewById(R.id.btnSelecionarFoto)
@@ -78,7 +94,7 @@ class AddRegistroActivity : AppCompatActivity() {
                 btnGravarAudio.text = "Gravar Áudio"
                 stopTimer()
             } else {
-                checkPermissionAndStart()
+                checkMicrophonePermissionAndStart()
             }
         }
 
@@ -108,16 +124,25 @@ class AddRegistroActivity : AppCompatActivity() {
             }
         }
 
-        imageManager = ImageManager(this)
-
         btnSelecionarFoto.setOnClickListener {
+            if (audioManager.isRecording) {
+                Toast.makeText(this, "Pare a gravação antes de selecionar uma foto", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val popup = PopupMenu(this, btnSelecionarFoto)
             popup.menu.add("Tirar Foto")
             popup.menu.add("Escolher da Galeria")
 
             popup.setOnMenuItemClickListener { item ->
                 when (item.title) {
-                    "Tirar Foto" -> imageManager.openCamera(cameraLauncher)
+                    "Tirar Foto" -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        } else {
+                            imageManager.openCamera(cameraLauncher)
+                        }
+                    }
                     "Escolher da Galeria" -> imageManager.openGallery(galleryLauncher)
                 }
                 true
@@ -127,9 +152,9 @@ class AddRegistroActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkPermissionAndStart() {
+    private fun checkMicrophonePermissionAndStart() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            requestMicrophonePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
         } else {
             startRecording()
         }
