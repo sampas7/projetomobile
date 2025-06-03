@@ -137,11 +137,7 @@ class AddRegistroActivity : AppCompatActivity() {
             popup.setOnMenuItemClickListener { item ->
                 when (item.title) {
                     "Tirar Foto" -> {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                        } else {
-                            imageManager.openCamera(cameraLauncher)
-                        }
+                        requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                     }
                     "Escolher da Galeria" -> imageManager.openGallery(galleryLauncher)
                 }
@@ -153,11 +149,7 @@ class AddRegistroActivity : AppCompatActivity() {
     }
 
     private fun checkMicrophonePermissionAndStart() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestMicrophonePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-        } else {
-            startRecording()
-        }
+        requestMicrophonePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
     }
 
     private fun startRecording() {
