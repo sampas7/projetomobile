@@ -34,7 +34,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnVerRegistros.setOnClickListener {
-
+            val intent = Intent(this, HistoricoActivity::class.java)
+            startActivity(intent)
         }
 
         btnSair.setOnClickListener {
