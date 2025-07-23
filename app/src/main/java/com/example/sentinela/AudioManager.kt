@@ -12,6 +12,36 @@ class AudioManager(private val context: Context) {
         private set
     var isRecording = false
         private set
+    var isPlaying = false
+        private set
+
+    fun getAudioPath(): String? {
+        return audioFile?.absolutePath
+    }
+
+    fun setAudioPath(path: String?) {
+        if (path == null) {
+            audioFile = null
+            return
+        }
+        val file = File(path)
+        if (file.exists()) {
+            audioFile = file
+        }
+    }
+
+    fun stopPlayback() {
+        if (!isPlaying) return
+        try {
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            mediaPlayer = null
+            isPlaying = false
+        }
+    }
 
     fun startRecording(): Boolean {
         return try {
@@ -54,7 +84,7 @@ class AudioManager(private val context: Context) {
     }
 
     fun playAudio(): Boolean {
-        if (isRecording) return false
+        if (isRecording || isPlaying) return false
         val file = audioFile ?: return false
         if (!file.exists()) return false
 
@@ -64,16 +94,21 @@ class AudioManager(private val context: Context) {
                 setDataSource(file.absolutePath)
                 prepare()
                 start()
+                this@AudioManager.isPlaying = true
+                setOnCompletionListener {
+                    this@AudioManager.isPlaying = false
+                    mediaPlayer = null
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
             return false
         }
-
         return true
     }
 
     fun deleteAudio(): Boolean {
+        stopPlayback()
         val deleted = audioFile?.delete() ?: false
         if (deleted) {
             audioFile = null
@@ -82,6 +117,7 @@ class AudioManager(private val context: Context) {
     }
 
     fun release() {
+        stopPlayback()
         try {
             mediaRecorder?.release()
             mediaPlayer?.release()

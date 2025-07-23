@@ -1,14 +1,25 @@
 package com.example.sentinela
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 
 class AddRegistroActivity : AppCompatActivity() {
+
+    private val PREFS_NAME = "RegistroDiarioPrefs"
+    private val KEY_URI_FOTO = "uri_foto"
+    private val KEY_PATH_AUDIO = "path_audio"
+
+    private lateinit var sharedPreferences: SharedPreferences
 
     private lateinit var imgPreview: ImageView
     private lateinit var btnSelecionarFoto: Button
@@ -54,10 +65,14 @@ class AddRegistroActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (it.resultCode == RESULT_OK) {
-            val uri = it.data?.data
-            uri?.let {
-                imageManager.currentPhotoUri = it
-                imgPreview.setImageURI(it)
+            it.data?.data?.let { uri ->
+
+                val contentResolver = applicationContext.contentResolver
+                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                contentResolver.takePersistableUriPermission(uri, takeFlags)
+
+                imageManager.currentPhotoUri = uri
+                imgPreview.setImageURI(uri)
             }
         }
     }
@@ -65,6 +80,8 @@ class AddRegistroActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_registro)
+
+        sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
         audioManager = AudioManager(this)
         imageManager = ImageManager(this)
@@ -94,13 +111,14 @@ class AddRegistroActivity : AppCompatActivity() {
                 btnGravarAudio.text = "Gravar Áudio"
                 stopTimer()
             } else {
+                audioManager.stopPlayback()
                 checkMicrophonePermissionAndStart()
             }
         }
 
         btnOuvirAudio.setOnClickListener {
             if (audioManager.isRecording) {
-                Toast.makeText(this, "Pare a gravação antes de ouvir", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Pare a gravação antes de ouvir, dog", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -108,6 +126,7 @@ class AddRegistroActivity : AppCompatActivity() {
             if (!sucesso) {
                 Toast.makeText(this, "Nenhuma gravação encontrada", Toast.LENGTH_SHORT).show()
             }
+
         }
 
         btnApagarAudio.setOnClickListener {
@@ -115,9 +134,8 @@ class AddRegistroActivity : AppCompatActivity() {
                 Toast.makeText(this, "Pare a gravação antes de apagar", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
-            val apagou = audioManager.deleteAudio()
-            if (apagou) {
+            if (audioManager.deleteAudio()) {
+                sharedPreferences.edit().remove(KEY_PATH_AUDIO).apply()
                 Toast.makeText(this, "Gravação apagada", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Nenhuma gravação pra apagar", Toast.LENGTH_SHORT).show()
@@ -146,6 +164,39 @@ class AddRegistroActivity : AppCompatActivity() {
 
             popup.show()
         }
+
+        carregarEstado()
+    }
+
+    private fun carregarEstado() {
+        val uriFotoString = sharedPreferences.getString(KEY_URI_FOTO, null)
+        if (uriFotoString != null) {
+            val uriFoto = Uri.parse(uriFotoString)
+            imageManager.currentPhotoUri = uriFoto
+            imgPreview.setImageURI(uriFoto)
+        }
+
+        val pathAudioSalvo = sharedPreferences.getString(KEY_PATH_AUDIO, null)
+        audioManager.setAudioPath(pathAudioSalvo)
+    }
+
+    private fun salvarEstado() {
+        val editor = sharedPreferences.edit()
+
+        // pra salvar a foto
+        val uriFotoString = imageManager.currentPhotoUri?.toString()
+        editor.putString(KEY_URI_FOTO, uriFotoString)
+
+        // vai pegar o caminho do áudio do AudioManager e salvar
+        val pathAudio = audioManager.getAudioPath()
+        editor.putString(KEY_PATH_AUDIO, pathAudio)
+
+        editor.apply()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        salvarEstado()
     }
 
     private fun checkMicrophonePermissionAndStart() {

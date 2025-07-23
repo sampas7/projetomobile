@@ -1,5 +1,6 @@
 package com.example.sentinela
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.animation.AnimationUtils
@@ -39,7 +40,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnSair.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()  // Faz o logout
+            val sharedPreferences = getSharedPreferences("RegistroDiarioPrefs", Context.MODE_PRIVATE)
+
+            sharedPreferences.edit().clear().apply()
+
+            FirebaseAuth.getInstance().signOut()
+
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
