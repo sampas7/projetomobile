@@ -16,8 +16,10 @@ class UploadWorker(appContext: Context, workerParams: WorkerParameters) :
 
     override suspend fun doWork(): Result {
         val sharedPreferences = applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
         val uriFotoString = sharedPreferences.getString(KEY_URI_FOTO, null)
         val pathAudioString = sharedPreferences.getString(KEY_PATH_AUDIO, null)
+
 
         if (uriFotoString == null && pathAudioString == null) {
             Log.d("UploadWorker", "Nenhum dado salvo para upload. Trabalho concluído.")
@@ -25,29 +27,32 @@ class UploadWorker(appContext: Context, workerParams: WorkerParameters) :
         }
 
         try {
-            if (uriFotoString != null && pathAudioString != null) {
-                Log.d("UploadWorker", "Foto e Áudio encontrados. Tentando upload...")
-                val firebaseManager = FirebaseStorageManager()
 
-                val uriFoto = Uri.parse(uriFotoString)
-                val uriAudio = Uri.parse("file://$pathAudioString")
+            Log.d("UploadWorker", "Dados encontrados. Tentando upload com o que houver...")
+            val firebaseManager = FirebaseStorageManager()
 
-                firebaseManager.uploadRegistro(
-                    data = Date(),
-                    anotacao = "Upload automático do dia.",
-                    uriDaFoto = uriFoto,
-                    uriDoAudio = uriAudio
-                )
-                Log.d("UploadWorker", "Upload (tentativa) finalizado.")
-            } else {
-                Log.d("UploadWorker", "Faltando foto ou áudio. Upload cancelado, preparando para limpar.")
-            }
+
+            val uriFoto = uriFotoString?.let { Uri.parse(it) }
+            val uriAudio = pathAudioString?.let { Uri.parse("file://$it") }
+
+
+            firebaseManager.uploadRegistro(
+                data = Date(),
+                anotacao = "Upload automático do dia.",
+                uriDaFoto = uriFoto,
+                uriDoAudio = uriAudio
+            )
+            Log.d("UploadWorker", "Upload (tentativa) finalizado.")
+
         } catch (e: Exception) {
+
             Log.e("UploadWorker", "Falha durante a tentativa de upload.", e)
         } finally {
+
             Log.d("UploadWorker", "Limpando SharedPreferences para o próximo dia.")
             sharedPreferences.edit().clear().apply()
         }
+
 
         return Result.success()
     }
