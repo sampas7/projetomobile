@@ -3,6 +3,8 @@ package com.example.sentinela
 import android.content.Context
 import android.media.MediaPlayer
 import android.media.MediaRecorder
+import android.os.Handler
+import android.os.Looper
 import java.io.File
 
 class AudioManager(private val context: Context) {
@@ -14,6 +16,10 @@ class AudioManager(private val context: Context) {
         private set
     var isPlaying = false
         private set
+
+
+    private var handler = Handler(Looper.getMainLooper())
+    private lateinit var updateSeekBarRunnable: Runnable
 
     fun getAudioPath(): String? {
         return audioFile?.absolutePath
@@ -33,6 +39,8 @@ class AudioManager(private val context: Context) {
     fun stopPlayback() {
         if (!isPlaying) return
         try {
+            // MUDANÇA: Para o loop de atualização da seekbar
+            handler.removeCallbacks(updateSeekBarRunnable)
             mediaPlayer?.stop()
             mediaPlayer?.release()
         } catch (e: Exception) {
@@ -44,6 +52,7 @@ class AudioManager(private val context: Context) {
     }
 
     fun startRecording(): Boolean {
+        // Sem mudanças aqui
         return try {
             val fileName = "audio_${System.currentTimeMillis()}.m4a"
             audioFile = File(context.externalCacheDir, fileName)
@@ -69,6 +78,7 @@ class AudioManager(private val context: Context) {
     }
 
     fun stopRecording() {
+        // Sem mudanças aqui
         if (!isRecording) return
         try {
             mediaRecorder?.apply {
@@ -83,7 +93,10 @@ class AudioManager(private val context: Context) {
         }
     }
 
-    fun playAudio(): Boolean {
+    fun playAudio(
+        onProgress: (progress: Int, max: Int) -> Unit,
+        onCompletion: () -> Unit
+    ): Boolean {
         if (isRecording || isPlaying) return false
         val file = audioFile ?: return false
         if (!file.exists()) return false
@@ -92,13 +105,35 @@ class AudioManager(private val context: Context) {
             mediaPlayer?.release()
             mediaPlayer = MediaPlayer().apply {
                 setDataSource(file.absolutePath)
-                prepare()
-                start()
-                this@AudioManager.isPlaying = true
+
+
+                setOnPreparedListener { player ->
+                    this@AudioManager.isPlaying = true
+                    player.start()
+
+
+                    updateSeekBarRunnable = Runnable {
+
+                        onProgress(player.currentPosition, player.duration)
+                        // Agenda a tarefa para rodar de novo daqui a 100 milissegundos
+                        handler.postDelayed(updateSeekBarRunnable, 100)
+                    }
+
+                    handler.post(updateSeekBarRunnable)
+                }
+
+
                 setOnCompletionListener {
                     this@AudioManager.isPlaying = false
+                    // Para o loop de atualização
+                    handler.removeCallbacks(updateSeekBarRunnable)
+
+                    onCompletion()
                     mediaPlayer = null
                 }
+
+                // Prepara o áudio sem travar a tela
+                prepareAsync()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -108,6 +143,7 @@ class AudioManager(private val context: Context) {
     }
 
     fun deleteAudio(): Boolean {
+
         stopPlayback()
         val deleted = audioFile?.delete() ?: false
         if (deleted) {
@@ -117,14 +153,8 @@ class AudioManager(private val context: Context) {
     }
 
     fun release() {
+
+        stopRecording()
         stopPlayback()
-        try {
-            mediaRecorder?.release()
-            mediaPlayer?.release()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        mediaRecorder = null
-        mediaPlayer = null
     }
 }

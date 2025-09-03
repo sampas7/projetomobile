@@ -31,6 +31,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -58,6 +59,9 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.kizitonwose.calendar:view:2.5.1")
+    implementation("com.airbnb.android:lottie:6.4.1")
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
@@ -66,6 +70,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

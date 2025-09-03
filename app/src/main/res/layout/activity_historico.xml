@@ -1,27 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:background="@drawable/fundo_sentinela"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/fundo_sentinela"
+    android:orientation="vertical"
+    tools:context=".HistoricoActivity">
 
     <TextView
-        android:id="@+id/txtTitulo"
+        android:id="@+id/txtMesAno"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:textAlignment="center"
+        android:textSize="22sp"
+        android:layout_marginTop="26dp"
+        android:textStyle="bold"
+        tools:text="Julho 2025" />
+
+    <com.kizitonwose.calendar.view.CalendarView
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cv_dayViewResource="@layout/calendar_day_layout"
+        app:cv_monthHeaderResource="@layout/calendar_month_header_layout"
+        app:cv_orientation="horizontal"
+        app:cv_scrollPaged="true" />
+
+    <ProgressBar
+        android:id="@+id/progressBarHistorico"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Histórico de Registros"
-        android:textSize="24sp"
-        android:textColor="#000000"
-        android:textStyle="bold"
-        android:layout_marginBottom="32dp"/>
-
-    <Button
-        android:id="@+id/btnAbrirCalendario"
-        android:background="@drawable/button_background"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:text="Abrir Calendário" />
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
 </LinearLayout>

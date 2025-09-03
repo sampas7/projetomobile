@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fundo_sentinela"
+    android:padding="16dp"
+    tools:context=".RegistroDetalheActivity">
+
+    <TextView
+        android:id="@+id/txtDataRegistro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="26dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        tools:text="Registro de 31/07/2025" />
+
+    <ImageView
+        android:id="@+id/imgFotoDetalhe"
+        android:layout_width="350dp"
+        android:layout_height="450dp"
+        android:layout_below="@id/txtDataRegistro"
+        android:layout_marginTop="16dp"
+        android:background="#E0E0E0"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+        android:maxHeight="400dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="Foto do registro" />
+
+    <Button
+        android:id="@+id/btnTocarAudioDetalhe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imgFotoDetalhe"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:text="Ouvir Áudio do Dia"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+    <TextView
+        android:id="@+id/txtSemRegistro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Nenhum registro encontrado para esta data."
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+    <ProgressBar
+        android:id="@+id/progressBarDetalhe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+</RelativeLayout>

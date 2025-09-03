@@ -1,66 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/fundo_sentinela"
-    android:padding="24dp">
+    android:padding="24dp"
+    tools:context=".AddRegistroActivity">
 
-    <!-- Preview da imagem -->
-    <ImageView
-        android:id="@+id/imgPreview"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardImgPreview"
+        android:layout_width="350dp"
+        android:layout_height="400dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
-        android:scaleType="centerCrop"
-        android:background="@android:color/darker_gray"
-        android:contentDescription="Preview da imagem" />
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp">
 
-    <!-- botão para tirar ou escolher foto -->
-    <Button
-        android:id="@+id/btnSelecionarFoto"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Selecionar Foto"
-        android:layout_below="@id/imgPreview"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/button_background"
-        android:textColor="#FFFFFF"/>
+        <ImageView
+            android:id="@+id/imgPreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/darker_gray"
+            android:scaleType="centerCrop"
+            android:contentDescription="Preview da imagem" />
 
-    <!-- botão para gravar áudio -->
-    <Button
-        android:id="@+id/btnGravarAudio"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Gravar Áudio"
-        android:layout_below="@id/btnSelecionarFoto"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/button_background"
-        android:textColor="#FFFFFF"/>
+        <TextView
+            android:id="@+id/txtPlaceholderFoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Toque para adicionar uma foto"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:background="#80000000"
+            android:padding="8dp"/>
 
-    <!-- Botão para ouvir áudio -->
-    <Button
-        android:id="@+id/btnOuvirAudio"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Ouvir Áudio"
-        android:layout_below="@id/btnGravarAudio"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/button_background"
-        android:textColor="#FFFFFF"/>
+    </androidx.cardview.widget.CardView>
 
-    <!-- Botão para apagar gravação -->
-    <Button
-        android:id="@+id/btnApagarAudio"
-        android:layout_width="200dp"
+    <FrameLayout
+        android:id="@+id/containerAudio"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Apagar Gravação"
-        android:layout_below="@id/btnOuvirAudio"
+        android:layout_below="@id/cardImgPreview"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/button_background"
-        android:textColor="#FFFFFF"/>
+        android:layout_marginTop="40dp">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottieRecordButton"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            app:lottie_rawRes="@raw/mic_recording"
+            app:lottie_loop="true"
+            app:lottie_autoPlay="false"
+            android:scaleType="centerInside"/>
+
+        <LinearLayout
+            android:id="@+id/playerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageButton
+                android:id="@+id/btnPlayPause"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/baseline_play_arrow_24"
+                android:contentDescription="Tocar/Pausar"/>
+
+            <SeekBar
+                android:id="@+id/seekBarAudio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="8dp"/>
+
+            <ImageButton
+                android:id="@+id/btnDeleteAudio"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/baseline_delete_24"
+                android:contentDescription="Apagar Áudio"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/txtContadorGravacao"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/containerAudio"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        tools:text="00:15"
+        tools:visibility="visible"/>
 
 </RelativeLayout>
